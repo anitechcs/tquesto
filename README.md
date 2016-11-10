@@ -1,12 +1,14 @@
-# tQuesto
+# tQuesto [![Build Status](https://travis-ci.org/anitechcs/tquesto.svg?branch=master)](https://travis-ci.org/anitechcs/tquesto)
 
 > Drop in analytics for your application
 
-tQuesto makes it easy to integrate powerfull analytics system to your application with absolute minimum fuss. It completely free to use and customize and always it will be.
+tQuesto makes it easy to integrate a powerfull analytics system to your application with absolute minimum fuss. It is completely free to use/customize and always it will be.
 
 Our primary goals are:
 
 * Provide radically faster and widely accessible API's for your application
+
+* 100% customizable events in your application context
 
 * Beautiful dashboard with lots of graphs and visualization
 
@@ -18,7 +20,7 @@ Our primary goals are:
 ## Installation and Getting started
 
 * Clone the source code from `git@github.com:anitechcs/tquesto.git`
-* cd into project directory `cd tquesto`
+* CD into project directory `cd tquesto`
 * Run `mvn spring-boot:run` to start the application
 * Open the browser and accecc `http://localhost:8080`
 
