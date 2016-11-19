@@ -6,6 +6,9 @@ import com.anitech.tquesto.domain.Authority;
 
 /**
  * Spring Data JPA repository for the Authority entity.
+ * 
+ * @author Tapas
+ * 
  */
 public interface AuthorityRepository extends JpaRepository<Authority, String> {
 	
