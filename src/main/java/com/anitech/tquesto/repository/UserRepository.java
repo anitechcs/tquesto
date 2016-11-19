@@ -13,6 +13,9 @@ import com.anitech.tquesto.domain.User;
 
 /**
  * Spring Data JPA repository for the User entity.
+ * 
+ * @author Tapas
+ * 
  */
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -24,7 +27,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findOneByEmail(String email);
 
-    Optional<User> findOneByLogin(String login);
+    Optional<User> findOneByUserName(String userName);
 
     @Query(value = "select distinct user from User user left join fetch user.authorities",
         countQuery = "select count(user) from User user")

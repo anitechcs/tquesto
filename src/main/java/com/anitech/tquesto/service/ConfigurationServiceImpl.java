@@ -4,13 +4,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Email service implementation
+ * Configuration service implementation
  * 
  * @author Tapas
  *
  */
 @Service
 @Transactional
-public class MailServiceImpl {
-	
+public class ConfigurationServiceImpl implements ConfigurationService {
+
 }

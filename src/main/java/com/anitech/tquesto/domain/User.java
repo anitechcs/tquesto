@@ -42,8 +42,8 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @NotNull
     @Pattern(regexp = Constants.LOGIN_REGEX)
     @Size(min = 1, max = 50)
-    @Column(length = 50, unique = true, nullable = false)
-    private String login;
+    @Column(name = "user_name", length = 50, unique = true, nullable = false)
+    private String userName;
 
     @JsonIgnore
     @NotNull
@@ -63,6 +63,10 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Size(max = 100)
     @Column(length = 100, unique = true)
     private String email;
+    
+    @Size(max = 20)
+    @Column(length = 20, unique = true)
+    private String phone;
 
     @NotNull
     @Column(nullable = false)
@@ -100,13 +104,13 @@ public class User extends AbstractAuditingEntity implements Serializable {
         this.id = id;
     }
 
-    public String getLogin() {
-        return login;
+    public String getUserName() {
+        return userName;
     }
 
-    //Lowercase the login before saving it in database
-    public void setLogin(String login) {
-        this.login = login.toLowerCase(Locale.ENGLISH);
+    //Lowercase the UserName before saving it in database
+    public void setUserName(String userName) {
+        this.userName = userName.toLowerCase(Locale.ENGLISH);
     }
 
     public String getPassword() {
@@ -141,7 +145,15 @@ public class User extends AbstractAuditingEntity implements Serializable {
         this.email = email;
     }
 
-    public boolean getActivated() {
+    public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public boolean getActivated() {
         return activated;
     }
 
@@ -200,7 +212,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
         User user = (User) o;
 
-        if (!login.equals(user.login)) {
+        if (!userName.equals(user.userName)) {
             return false;
         }
 
@@ -209,13 +221,13 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     @Override
     public int hashCode() {
-        return login.hashCode();
+        return userName.hashCode();
     }
 
     @Override
     public String toString() {
         return "User{" +
-            "login='" + login + '\'' +
+            "userName='" + userName + '\'' +
             ", firstName='" + firstName + '\'' +
             ", lastName='" + lastName + '\'' +
             ", email='" + email + '\'' +
