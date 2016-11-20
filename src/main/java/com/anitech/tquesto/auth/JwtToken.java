@@ -3,9 +3,10 @@ package com.anitech.tquesto.auth;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * @author Tapas
- *
  * Object to return as body in JWT Authentication.
+ * 
+ * @author Tapas
+ * 
  */
 public class JwtToken {
 

@@ -4,6 +4,9 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  * Utility class for generating random Strings.
+ * 
+ * @author Tapas
+ * 
  */
 public final class RandomUtil {
 
@@ -38,4 +41,5 @@ public final class RandomUtil {
     public static String generateResetKey() {
         return RandomStringUtils.randomNumeric(DEF_COUNT);
     }
+    
 }
