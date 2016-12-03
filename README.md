@@ -2,6 +2,8 @@
 
 > Drop in analytics for your application
 
+![GitHub Logo](https://github.com/anitechcs/tquesto-dashboard/blob/master/src/assets/imgs/logo-blue.png)
+
 tQuesto makes it easy to integrate a powerfull analytics system to your application with absolute minimum fuss. It is completely free to use/customize and always it will be.
 
 Our primary goals are:
