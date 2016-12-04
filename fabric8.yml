@@ -1,11 +1,11 @@
 ---
 buildName: "tquesto"
 links:
-  Git: "http://gogs/gogsadmin/tquesto.git"
-  Job: "http://jenkins.default.104.199.224.82.nip.io/job/tquesto"
-  Production: "http://10.127.255.197:80/kubernetes/pods?namespace=default-production"
-  Staging: "http://10.127.255.197:80/kubernetes/pods?namespace=default-staging"
-  Testing: "http://10.127.255.197:80/kubernetes/pods?namespace=default-testing"
+  Git: "https://github.com/anitechcs/tquesto"
+  Job: "http://jenkins.default.104.199.237.35.nip.io/job/tquesto"
+  Production: "http://10.127.242.4:80/kubernetes/pods?namespace=default-production"
+  Staging: "http://10.127.242.4:80/kubernetes/pods?namespace=default-staging"
+  Testing: "http://10.127.242.4:80/kubernetes/pods?namespace=default-testing"
 environments:
   Testing: "default-testing"
   Staging: "default-staging"
