@@ -23,6 +23,7 @@
 		<commons-io.version>2.5</commons-io.version>
 		<commons-lang.version>3.4</commons-lang.version>
 		<jjwt.version>0.6.0</jjwt.version>
+		<swagger.version>2.5.0</swagger.version>
 		
 		<!-- Docker properties -->
         <docker.image.name>anitechcs/${project.artifactId}:${project.version}</docker.image.name>
@@ -135,6 +136,16 @@
 		<dependency>
 		    <groupId>org.flywaydb</groupId>
 		    <artifactId>flyway-core</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>io.springfox</groupId>
+		    <artifactId>springfox-swagger2</artifactId>
+		    <version>${swagger.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>io.springfox</groupId>
+		    <artifactId>springfox-swagger-ui</artifactId>
+		    <version>${swagger.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
