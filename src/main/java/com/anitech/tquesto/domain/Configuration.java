@@ -18,7 +18,7 @@ import javax.validation.constraints.Size;
  *
  */
 @Entity
-@Table(name = "tq_configuration")
+@Table(name = "tq_configuration", schema="tquesto")
 public class Configuration extends AbstractAuditingEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;

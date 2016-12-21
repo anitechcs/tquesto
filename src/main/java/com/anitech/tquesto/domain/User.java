@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Tapas
  */
 @Entity
-@Table(name = "tq_user")
+@Table(name = "tq_user", schema="tquesto")
 public class User extends AbstractAuditingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;

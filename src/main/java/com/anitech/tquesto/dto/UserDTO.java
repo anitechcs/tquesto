@@ -18,10 +18,15 @@ import com.anitech.tquesto.util.Constants;
  * @author Tapas
  */
 public class UserDTO {
+	
+	public static final int PASSWORD_MIN_LENGTH = 3;
+	public static final int PASSWORD_MAX_LENGTH = 20;
+	
+	private Long id;
 
     @Pattern(regexp = Constants.LOGIN_REGEX)
     @Size(min = 1, max = 50)
-    private String login;
+    private String userName;
 
     @Size(max = 50)
     private String firstName;
@@ -32,6 +37,9 @@ public class UserDTO {
     @Email
     @Size(min = 5, max = 100)
     private String email;
+    
+    @Size(max = 20)
+    private String phone;
 
     private boolean activated = false;
 
@@ -44,16 +52,16 @@ public class UserDTO {
     }
 
     public UserDTO(User user) {
-        this(user.getUserName(), user.getFirstName(), user.getLastName(),
+        this(user.getId(), user.getUserName(), user.getFirstName(), user.getLastName(),
             user.getEmail(), user.getActivated(), user.getLangKey(),
             user.getAuthorities().stream().map(Authority::getName)
                 .collect(Collectors.toSet()));
     }
 
-    public UserDTO(String login, String firstName, String lastName,
+    public UserDTO(Long id, String userName, String firstName, String lastName,
         String email, boolean activated, String langKey, Set<String> authorities) {
-
-        this.login = login;
+    	this.id = id;
+        this.userName = userName;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -62,11 +70,16 @@ public class UserDTO {
         this.authorities = authorities;
     }
 
-    public String getLogin() {
-        return login;
-    }
 
-    public String getFirstName() {
+    public Long getId() {
+		return id;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public String getFirstName() {
         return firstName;
     }
 
@@ -78,7 +91,11 @@ public class UserDTO {
         return email;
     }
 
-    public boolean isActivated() {
+    public String getPhone() {
+		return phone;
+	}
+
+	public boolean isActivated() {
         return activated;
     }
 
@@ -93,7 +110,7 @@ public class UserDTO {
     @Override
     public String toString() {
         return "UserDTO{" +
-            "login='" + login + '\'' +
+            "userName='" + userName + '\'' +
             ", firstName='" + firstName + '\'' +
             ", lastName='" + lastName + '\'' +
             ", email='" + email + '\'' +
