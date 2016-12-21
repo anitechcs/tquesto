@@ -34,3 +34,7 @@ Our primary goals are:
 * `mvn clean` - To clean the old build artifacts
 * `mvn install` - To download the libraries mentioned in pom.xml
 * `mvn test` - To run unit test cases
+
+## Run in Docker Container
+ `mvn clean package -DskipTests docker:stop docker:build docker:run`
+ 

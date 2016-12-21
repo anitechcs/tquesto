@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
  * @author Tapas
  */
 @Entity
-@Table(name = "tq_authority")
+@Table(name = "tq_authority", schema="tquesto")
 public class Authority implements Serializable {
 
     private static final long serialVersionUID = 1L;

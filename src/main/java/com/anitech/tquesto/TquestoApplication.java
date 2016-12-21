@@ -10,13 +10,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.env.Environment;
 
+import com.anitech.tquesto.util.TquestoProperties;
+
 /**
  * This is the entry point of the application
  * 
  * @author Tapas
  */
 @SpringBootApplication
-@EnableConfigurationProperties
+@EnableConfigurationProperties({ TquestoProperties.class })
 public class TquestoApplication {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(TquestoApplication.class);

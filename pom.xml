@@ -4,8 +4,7 @@
 
 	<groupId>com.anitech</groupId>
 	<artifactId>tquesto</artifactId>
-	<version>0.0.1</version>
-	<packaging>war</packaging>
+	<version>0.0.1-SNAPSHOT</version>
 
 	<name>tquesto</name>
 	<description>Drop in analytics for your application</description>
@@ -23,6 +22,12 @@
 		<commons-io.version>2.5</commons-io.version>
 		<commons-lang.version>3.4</commons-lang.version>
 		<jjwt.version>0.6.0</jjwt.version>
+		
+		<!-- Docker properties -->
+        <docker.image.name>anitechcs/${project.artifactId}:${project.version}</docker.image.name>
+        <docker.from>java:8u40</docker.from>
+        <docker.container.port>8080</docker.container.port>
+        <docker.host.port>8080</docker.host.port>
 	</properties>
 
 	<dependencies>
@@ -43,9 +48,17 @@
 			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
 		<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
+		<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -73,7 +86,20 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+		<dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-java8</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.github.ben-manes.caffeine</groupId>
 			<artifactId>caffeine</artifactId>
@@ -106,6 +132,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+		    <groupId>org.flywaydb</groupId>
+		    <artifactId>flyway-core</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
@@ -121,10 +151,10 @@
 			<version>${commons-lang.version}</version>
 		</dependency>
 		<dependency>
-      <groupId>io.fabric8</groupId>
-      <artifactId>fabric8-arquillian</artifactId>
-      <scope>test</scope>
-    </dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
 	</dependencies>
 
 	<profiles>
@@ -172,33 +202,106 @@
 			        </execution>
 			    </executions>
 			</plugin>
-			<plugin>
-        <groupId>io.fabric8</groupId>
-        <artifactId>fabric8-maven-plugin</artifactId>
-        <version>3.2.7</version>
-        <configuration>
-          <images>
-            <image>
-              <name>${project.artifactId}:${project.version}</name>
-              <build>
-                <from>anitechcs/tquesto</from>
-              </build>
-            </image>
-          </images>
-        </configuration>
-      </plugin>
 			
+			<!-- Docker plugin - docker:build ALWAYS requires to be called after mvn package!!!!!-->
+            <!-- docker:build, docker:start, docker:stop, docker:watch, docker:remove, docker:logs, docker:source -->
+            <!-- -Ddocker.follow=true also a good option -->
+            <!-- To find you docker ip address with docker machine: [docker-machine ip default] -->
+            <!-- When running on a mac you may need [eval "$(docker-machine env default)"] : with the quotes -->
+            <!-- Running with JMeter (could also run integration tests (need to update the executions):
+                mvn package -DskipTests docker:build
+                mvn docker:run -Ddocker.follow=false jmeter:jmeter -Dhost=192.168.99.100 -Dport=8080 docker:stop
+            -->
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.18.1</version>
+                <configuration>
+                    <!-- If you have a different reg set it here
+                    <registry>hub.docker.com</registry> -->
+                    <verbose>true</verbose>
+                    <logDate>default</logDate>
+                    <autoPull>true</autoPull>
+                    <images>
+                        <image>
+                            <alias>db</alias>
+                            <name>postgres:9.6</name>
+                            <run>
+                                <wait>
+                                    <log>database system is ready to accept connections</log>
+                                    <time>20000</time>
+                                </wait>
+                                <log>
+                                    <prefix>DB</prefix>
+                                    <color>green</color>
+                                </log>
+                                <ports>
+                                    <port>5431:5431</port>
+                                </ports>
+                            </run>
+                        </image>
+                        <image>
+                            <alias>service</alias>
+                            <name>${docker.image.name}</name>
+                            <build>
+                                <from>${docker.from}</from>
+                                <assembly>
+                                    <basedir>/maven</basedir>
+                                    <inline xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                            xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+                                            xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+                                        <dependencySets>
+                                            <dependencySet>
+                                                <includes>
+                                                    <include>${project.groupId}:${project.artifactId}</include>
+                                                </includes>
+                                                <outputDirectory>.</outputDirectory>
+                                                <outputFileNameMapping>app.jar</outputFileNameMapping>
+                                            </dependencySet>
+                                        </dependencySets>
+                                    </inline>
+                                </assembly>
+                                <ports>
+                                    <port>${docker.container.port}</port>
+                                </ports>
+                                <entryPoint>
+                                    <arg>java</arg>
+                                    <arg>-Djava.security.egd=file:/dev/./urandom</arg>
+                                    <arg>-jar</arg>
+                                    <arg>/maven/app.jar</arg>
+                                </entryPoint>
+                            </build>
+
+                            <run>
+                                <ports>
+                                    <port>${docker.host.port}:${docker.container.port}</port>
+                                </ports>
+                                <log>
+                                    <prefix>TC</prefix>
+                                    <color>cyan</color>
+ 									<!-- <driver>
+                                        <name>gelf</name>
+                                        <opts>
+                                            <gelf-address>udp://${docker.host.address}:12201</gelf-address>
+                                        </opts>
+                                    </driver>-->
+                                </log>
+                                <wait>
+                                    <http>
+                                        <url>http://${docker.host.address}:${docker.host.port}/api/ping</url>
+                                        <method>GET</method>
+                                    </http>
+                                    <log>${docker.image.name} is ready.</log>
+                                    <time>200000</time>
+                                </wait>
+                                <links>
+                                    <link>db:db</link>
+                                </links>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
-
-	<dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>io.fabric8</groupId>
-        <artifactId>fabric8-arquillian</artifactId>
-        <version>2.2.182</version>
-        <scope>test</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 </project>
