@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Description;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 /**
+ * Thymeleaf configuration, used for email templates
+ * 
  * @author Tapas
  *
  */
