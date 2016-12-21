@@ -24,7 +24,8 @@ Our primary goals are:
 * Clone the source code from `git@github.com:anitechcs/tquesto.git`
 * CD into project directory `cd tquesto`
 * Run `mvn spring-boot:run` to start the application
-* Open the browser and accecc `http://localhost:8080`
+* Open the browser and access the applicatin at `http://localhost:8080`
+* You can access Swagger Services docs at `http://localhost:8080/swagger-ui.html`
 
 
 ## Useful Maven Commands
