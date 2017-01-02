@@ -10,19 +10,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class JwtToken {
 
-	private String idToken;
+	private String authToken;
 
-    public JwtToken(String idToken) {
-        this.idToken = idToken;
+    public JwtToken(String authToken) {
+        this.authToken = authToken;
     }
 
-    @JsonProperty("id_token")
-    public String getIdToken() {
-        return idToken;
+    @JsonProperty("auth_token")
+    public String getAuthToken() {
+        return authToken;
     }
 
-    public void setIdToken(String idToken) {
-        this.idToken = idToken;
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
     
 }
