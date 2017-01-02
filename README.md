@@ -1,6 +1,6 @@
 # tQuesto [![Build Status](https://travis-ci.org/anitechcs/tquesto.svg?branch=master)](https://travis-ci.org/anitechcs/tquesto)
 
-> Drop in analytics for your application
+> Drop in analytics for your web/mobile application
 
 ![](https://github.com/anitechcs/tquesto-dashboard/blob/master/src/assets/imgs/logo-blue.png)
 
