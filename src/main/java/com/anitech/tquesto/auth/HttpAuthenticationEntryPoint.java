@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class HttpAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authEx)

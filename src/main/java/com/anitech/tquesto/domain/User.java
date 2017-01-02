@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -30,13 +31,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Tapas
  */
 @Entity
-@Table(name = "tq_user", schema="tquesto")
+@Table(name="tq_user", schema="tquesto")
 public class User extends AbstractAuditingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="seq-gen")
+    @SequenceGenerator(name="seq-gen",sequenceName="USER_ID_SEQ", initialValue=1, allocationSize=1)
     private Long id;
 
     @NotNull

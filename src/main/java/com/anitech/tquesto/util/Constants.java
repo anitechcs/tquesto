@@ -22,6 +22,6 @@ public class Constants {
 
     public static final String ANONYMOUS = "ROLE_ANONYMOUS";
     
-    
+    public static final String SYSTEM_ACCOUNT = "system";
     
 }

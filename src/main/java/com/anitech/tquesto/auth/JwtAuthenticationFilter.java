@@ -22,13 +22,13 @@ import io.jsonwebtoken.ExpiredJwtException;
  * @author Tapas
  *
  */
-public class JwtFilter extends GenericFilterBean {
+public class JwtAuthenticationFilter extends GenericFilterBean {
 
-	private final Logger log = LoggerFactory.getLogger(JwtFilter.class);
+	private final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private TokenProvider tokenProvider;
 
-    public JwtFilter(TokenProvider tokenProvider) {
+    public JwtAuthenticationFilter(TokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
     }
 

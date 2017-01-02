@@ -139,7 +139,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(encryptedPassword);
         user.setResetKey(RandomUtil.generateResetKey());
         user.setResetDate(ZonedDateTime.now());
-        user.setActivated(true);
+        user.setActivated(false);
         userRepository.save(user);
         log.debug("Created Information for User: {}", user);
         return user;

@@ -96,6 +96,14 @@ CREATE TABLE tquesto.tq_configuration
 )
 TABLESPACE pg_default;
 
+/* Create Sequence */
+CREATE SEQUENCE USER_ID_SEQ
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
 
 
 /* Insert Few Demo Users */

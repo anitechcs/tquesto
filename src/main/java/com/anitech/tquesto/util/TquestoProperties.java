@@ -13,6 +13,8 @@ import org.springframework.web.cors.CorsConfiguration;
 @ConfigurationProperties(prefix = "tquesto", ignoreUnknownFields = false)
 public class TquestoProperties {
 
+	private final Application application = new Application();
+	
 	private final Async async = new Async();
 
     private final Http http = new Http();
@@ -25,10 +27,15 @@ public class TquestoProperties {
 
     private final Swagger swagger = new Swagger();
 
-    private final Metrics metrics = new Metrics();
+    private final Logging logging = new Logging();
 
     private final CorsConfiguration cors = new CorsConfiguration();
 
+    
+    public Application getApplication() {
+        return application;
+    }
+    
     public Async getAsync() {
         return async;
     }
@@ -53,14 +60,38 @@ public class TquestoProperties {
         return swagger;
     }
 
-    public Metrics getMetrics() {
-        return metrics;
+    public Logging getLogging() { 
+    	return logging; 
     }
 
     public CorsConfiguration getCors() {
         return cors;
     }
 
+    public static class Application {
+    	
+    	private String name = "TQuesto";
+    	
+    	private String version = "1.0.0";
+
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public String getVersion() {
+			return version;
+		}
+
+		public void setVersion(String version) {
+			this.version = version;
+		}
+    	
+    }
+    
     public static class Async {
 
         private int corePoolSize = 2;
@@ -292,149 +323,6 @@ public class TquestoProperties {
             this.licenseUrl = licenseUrl;
         }
     }
-
-    public static class Metrics {
-
-        private final Jmx jmx = new Jmx();
-
-        private final Spark spark = new Spark();
-
-        private final Graphite graphite = new Graphite();
-
-        private final Logs logs = new Logs();
-
-        public Jmx getJmx() {
-            return jmx;
-        }
-
-        public Spark getSpark() {
-            return spark;
-        }
-
-        public Graphite getGraphite() {
-            return graphite;
-        }
-
-        public Logs getLogs() {
-            return logs;
-        }
-
-        public static class Jmx {
-
-            private boolean enabled = true;
-
-            public boolean isEnabled() {
-                return enabled;
-            }
-
-            public void setEnabled(boolean enabled) {
-                this.enabled = enabled;
-            }
-        }
-
-        public static class Spark {
-
-            private boolean enabled = false;
-
-            private String host = "localhost";
-
-            private int port = 9999;
-
-            public boolean isEnabled() {
-                return enabled;
-            }
-
-            public void setEnabled(boolean enabled) {
-                this.enabled = enabled;
-            }
-
-            public String getHost() {
-                return host;
-            }
-
-            public void setHost(String host) {
-                this.host = host;
-            }
-
-            public int getPort() {
-                return port;
-            }
-
-            public void setPort(int port) {
-                this.port = port;
-            }
-        }
-
-        public static class Graphite {
-
-            private boolean enabled = false;
-
-            private String host = "localhost";
-
-            private int port = 2003;
-
-            private String prefix = "kitchens";
-
-            public boolean isEnabled() {
-                return enabled;
-            }
-
-            public void setEnabled(boolean enabled) {
-                this.enabled = enabled;
-            }
-
-            public String getHost() {
-                return host;
-            }
-
-            public void setHost(String host) {
-                this.host = host;
-            }
-
-            public int getPort() {
-                return port;
-            }
-
-            public void setPort(int port) {
-                this.port = port;
-            }
-
-            public String getPrefix() {
-                return prefix;
-            }
-
-            public void setPrefix(String prefix) {
-                this.prefix = prefix;
-            }
-        }
-
-        public static  class Logs {
-
-            private boolean enabled = false;
-
-            private long reportFrequency = 60;
-
-            public long getReportFrequency() {
-                return reportFrequency;
-            }
-
-            public void setReportFrequency(int reportFrequency) {
-                this.reportFrequency = reportFrequency;
-            }
-
-            public boolean isEnabled() {
-                return enabled;
-            }
-
-            public void setEnabled(boolean enabled) {
-                this.enabled = enabled;
-            }
-        }
-    }
-
-    private final Logging logging = new Logging();
-
-    public Logging getLogging() { return logging; }
 
     public static class Logging {
 
