@@ -6,6 +6,8 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +26,8 @@ import com.anitech.tquesto.auth.TokenProvider;
 import com.anitech.tquesto.dto.LoginDTO;
 
 /**
+ * Authentication controller
+ * 
  * @author Tapas
  *
  */
@@ -31,6 +35,8 @@ import com.anitech.tquesto.dto.LoginDTO;
 @RequestMapping("/api")
 public class AuthController {
 
+	private final Logger logger = LoggerFactory.getLogger(AuthController.class);
+	
 	@Inject
     private TokenProvider tokenProvider;
 
@@ -40,9 +46,8 @@ public class AuthController {
     
     @PostMapping("/authenticate")
     public ResponseEntity<?> authorize(@Valid @RequestBody LoginDTO loginDTO, HttpServletResponse response) {
-
-        UsernamePasswordAuthenticationToken authenticationToken =
-            new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
+    	logger.debug("Inside authorize() method!");
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
 
         try {
             Authentication authentication = this.authenticationManager.authenticate(authenticationToken);
@@ -52,7 +57,7 @@ public class AuthController {
             response.addHeader(JwtConfigurer.AUTHORIZATION_HEADER, "Bearer " + jwt);
             return ResponseEntity.ok(new JwtToken(jwt));
         } catch (AuthenticationException exception) {
-            return new ResponseEntity<>(Collections.singletonMap("AuthenticationException",exception.getLocalizedMessage()), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(Collections.singletonMap("AuthenticationException", exception.getLocalizedMessage()), HttpStatus.UNAUTHORIZED);
         }
     }
     

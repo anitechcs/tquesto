@@ -20,9 +20,9 @@ public interface UserService {
 
 	public Optional<User> requestPasswordReset(String mail);
 
-	public User createUser(String userName, String password, String firstName, String lastName, String email, String langKey);
-
 	public User createUser(UserDTO userDTOArg);
+	
+	public User createUser(String userName, String password, String firstName, String lastName, String email, String langKey);
 
 	public void updateUser(String firstName, String lastName, String email, String langKey);
 
