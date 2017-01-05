@@ -31,14 +31,15 @@ public class TquestoApplication {
      * @throws UnknownHostException if the local host name could not be resolved into an address
      */
 	public static void main(String[] args) throws UnknownHostException {
-		LOG.info("tQuesto Application Started!");
+		LOG.info("tQuesto Application Starting...!");
 		SpringApplication application = new SpringApplication(TquestoApplication.class);
 		Environment env = application.run(args).getEnvironment();
 		LOG.info("\n----------------------------------------------------------\n\t" +
-                "Application '{}' is running! Access URLs:\n\t" +
+                "Application '{}' is running in '{}' mode! Access URLs:\n\t" +
                 "Local: \t\thttp://localhost:{}\n\t" +
                 "External: \thttp://{}:{}\n----------------------------------------------------------",
             env.getProperty("tquesto.application.name"),
+            env.getActiveProfiles()[0],
             env.getProperty("server.port"),
             InetAddress.getLocalHost().getHostAddress(),
             env.getProperty("server.port"));
