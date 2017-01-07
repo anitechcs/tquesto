@@ -220,10 +220,10 @@ public class UserServiceImpl implements UserService {
         Optional<User> optionalUser = userRepository.findOneByUserName(SecurityUtils.getCurrentUserLogin());
         User user = null;
         if (optionalUser.isPresent()) {
-          user = optionalUser.get();
+        	user = optionalUser.get();
             user.getAuthorities().size(); // eagerly load the association
-         }
-         return user;
+        }
+        return user;
     }
 
 

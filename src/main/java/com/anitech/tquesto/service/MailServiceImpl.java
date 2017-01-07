@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
+import com.anitech.tquesto.domain.App;
 import com.anitech.tquesto.domain.User;
 import com.anitech.tquesto.util.TquestoProperties;
 
@@ -31,6 +32,7 @@ public class MailServiceImpl implements MailService {
 	private final Logger log = LoggerFactory.getLogger(MailService.class);
 
     private static final String USER = "user";
+    private static final String APP = "app";
     private static final String BASE_URL = "baseUrl";
 
     @Inject
@@ -81,13 +83,13 @@ public class MailServiceImpl implements MailService {
 
     @Async
     @Override
-    public void sendCreationEmail(User user, String baseUrl) {
+    public void sendUserCreationEmail(User user, String baseUrl) {
         log.debug("Sending creation e-mail to '{}'", user.getEmail());
         Locale locale = Locale.forLanguageTag(user.getLangKey());
         Context context = new Context(locale);
         context.setVariable(USER, user);
         context.setVariable(BASE_URL, baseUrl);
-        String content = templateEngine.process("creationEmail", context);
+        String content = templateEngine.process("userCreationEmail", context);
         String subject = messageSource.getMessage("email.activation.title", null, locale);
         sendEmail(user.getEmail(), subject, content, false, true);
     }
@@ -102,6 +104,20 @@ public class MailServiceImpl implements MailService {
         context.setVariable(BASE_URL, baseUrl);
         String content = templateEngine.process("passwordResetEmail", context);
         String subject = messageSource.getMessage("email.reset.title", null, locale);
+        sendEmail(user.getEmail(), subject, content, false, true);
+    }
+    
+    @Async
+    @Override
+    public void sendAppCreationEmail(User user, App app, String baseUrl) {
+        log.debug("Sending App creation e-mail to '{}'", user.getEmail());
+        Locale locale = Locale.forLanguageTag(user.getLangKey());
+        Context context = new Context(locale);
+        context.setVariable(USER, user);
+        context.setVariable(APP, app);
+        context.setVariable(BASE_URL, baseUrl);
+        String content = templateEngine.process("appCreationEmail", context);
+        String subject = messageSource.getMessage("email.activation.title", null, locale);
         sendEmail(user.getEmail(), subject, content, false, true);
     }
     

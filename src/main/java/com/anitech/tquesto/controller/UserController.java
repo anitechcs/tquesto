@@ -66,7 +66,7 @@ import com.anitech.tquesto.util.PaginationUtil;
 @RequestMapping("/api")
 public class UserController {
 	
-	private final Logger log = LoggerFactory.getLogger(UserController.class);
+	private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Inject
     private UserRepository userRepository;
@@ -94,8 +94,7 @@ public class UserController {
     @PostMapping("/users")
     @Secured(Constants.ADMIN)
     public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO, HttpServletRequest request) throws URISyntaxException {
-        log.debug("REST request to save User : {}", userDTO);
-
+        logger.debug("REST request to save User : {}", userDTO);
         //Lowercase the user login before comparing with database
         if (userRepository.findOneByUserName(userDTO.getUserName().toLowerCase()).isPresent()) {
             return ResponseEntity.badRequest()
@@ -107,13 +106,8 @@ public class UserController {
                 .body(null);
         } else {
             User newUser = userService.createUser(userDTO);
-            String baseUrl = request.getScheme() + // "http"
-            "://" +                                // "://"
-            request.getServerName() +              // "myhost"
-            ":" +                                  // ":"
-            request.getServerPort() +              // "80"
-            request.getContextPath();              // "/myContextPath" or "" if deployed in root context
-            mailService.sendCreationEmail(newUser, baseUrl);
+            String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+            mailService.sendUserCreationEmail(newUser, baseUrl);
             return ResponseEntity.created(new URI("/api/users/" + newUser.getUserName()))
                 .headers(HeaderUtil.createAlert( "A user is created with identifier " + newUser.getUserName(), newUser.getUserName()))
                 .body(newUser);
@@ -131,7 +125,7 @@ public class UserController {
     @PutMapping("/users")
     @Secured(Constants.ADMIN)
     public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO) {
-        log.debug("REST request to update User : {}", userDTO);
+        logger.debug("REST request to update User : {}", userDTO);
         Optional<User> existingUser = userRepository.findOneByEmail(userDTO.getEmail());
         if (existingUser.isPresent() && (!existingUser.get().getId().equals(userDTO.getId()))) {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert("userManagement", "emailexists", "E-mail already in use")).body(null);
@@ -173,9 +167,9 @@ public class UserController {
      * @param userName of the user to find
      * @return the ResponseEntity with status 200 (OK) and with body the "login" user, or with status 404 (Not Found)
      */
-    @GetMapping("/users/{userName:" + Constants.LOGIN_REGEX + "}")
+    @GetMapping("/users/{userName:" + Constants.USER_NAME_REGEX + "}")
     public ResponseEntity<UserDTO> getUser(@PathVariable String userName) {
-        log.debug("REST request to get User : {}", userName);
+        logger.debug("REST request to get User : {}", userName);
         return userService.getUserWithAuthoritiesByUserName(userName)
                 .map(UserDTO::new)
                 .map(userDTO -> new ResponseEntity<>(userDTO, HttpStatus.OK))
@@ -188,10 +182,10 @@ public class UserController {
      * @param userName of the user to delete
      * @return the ResponseEntity with status 200 (OK)
      */
-    @DeleteMapping("/users/{userName:" + Constants.LOGIN_REGEX + "}")
+    @DeleteMapping("/users/{userName:" + Constants.USER_NAME_REGEX + "}")
     @Secured(Constants.ADMIN)
     public ResponseEntity<Void> deleteUser(@PathVariable String userName) {
-        log.debug("REST request to delete User: {}", userName);
+        logger.debug("REST request to delete User: {}", userName);
         userService.deleteUser(userName);
         return ResponseEntity.ok().headers(HeaderUtil.createAlert( "A user is deleted with identifier " + userName, userName)).build();
     }
