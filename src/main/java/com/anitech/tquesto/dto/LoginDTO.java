@@ -12,7 +12,7 @@ import com.anitech.tquesto.util.Constants;
  */
 public class LoginDTO {
 
-	@Pattern(regexp = Constants.LOGIN_REGEX)
+	@Pattern(regexp = Constants.USER_NAME_REGEX)
     @NotNull
     @Size(min = 1, max = 50)
     private String username;

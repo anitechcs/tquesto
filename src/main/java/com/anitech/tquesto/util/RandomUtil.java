@@ -42,4 +42,13 @@ public final class RandomUtil {
         return RandomStringUtils.randomNumeric(DEF_COUNT);
     }
     
+    /**
+     * Generates a app secret key.
+     *
+     * @return the generated secret key
+     */
+     public static String generateAppSecretKey() {
+         return RandomStringUtils.randomAlphanumeric(DEF_COUNT);
+     }
+    
 }

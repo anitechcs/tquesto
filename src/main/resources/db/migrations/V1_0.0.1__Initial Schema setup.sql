@@ -96,9 +96,41 @@ CREATE TABLE tquesto.tq_configuration
 )
 TABLESPACE pg_default;
 
-/* Create Sequence */
+/**
+ * Create tq_app table
+ */
+CREATE TABLE tquesto.tq_app
+(
+    app_id bigint NOT NULL,
+    created_by character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    created_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    last_modified_by character varying(50) COLLATE pg_catalog."default",
+    last_modified_date TIMESTAMP WITH TIME ZONE,
+    app_name character varying(20) COLLATE pg_catalog."default",
+    app_description character varying(100) COLLATE pg_catalog."default",
+    app_icon bytea,
+    app_secret character varying(200) COLLATE pg_catalog."default" NOT NULL,
+    is_default boolean NOT NULL,
+    enable_android_sdk boolean NOT NULL,
+    enable_ios_sdk boolean NOT NULL,
+    enable_java_sdk boolean NOT NULL,
+    enable_js_sdk boolean NOT NULL,
+    CONSTRAINT tq_app_pkey PRIMARY KEY (app_id),
+    CONSTRAINT uk_appnameco21xg5bx6n594mg87cbpdcnp UNIQUE (app_name)
+)
+TABLESPACE pg_default;
+
+/* Create Sequence for tq_user table*/
 CREATE SEQUENCE USER_ID_SEQ
     START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+    
+/* Create Sequence for tq_app table*/
+CREATE SEQUENCE APP_ID_SEQ
+    START WITH 10000000
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
