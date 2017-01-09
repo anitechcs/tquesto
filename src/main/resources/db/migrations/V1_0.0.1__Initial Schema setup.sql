@@ -122,7 +122,7 @@ TABLESPACE pg_default;
 
 /* Create Sequence for tq_user table*/
 CREATE SEQUENCE USER_ID_SEQ
-    START WITH 1
+    START WITH 5
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE

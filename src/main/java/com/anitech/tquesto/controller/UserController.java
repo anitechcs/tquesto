@@ -81,24 +81,24 @@ public class UserController {
     /**
      * POST  /users  : Creates a new user.
      * <p>
-     * Creates a new user if the login and email are not already used, and sends an
+     * Creates a new user if the username and email are not already used, and sends an
      * mail with an activation link.
      * The user needs to be activated on creation.
      * </p>
      *
      * @param userDTO the user to create
      * @param request the HTTP request
-     * @return the ResponseEntity with status 201 (Created) and with body the new user, or with status 400 (Bad Request) if the login or email is already in use
+     * @return the ResponseEntity with status 201 (Created) and with body the new user, or with status 400 (Bad Request) if the username or email is already in use
      * @throws URISyntaxException if the Location URI syntax is incorrect
      */
     @PostMapping("/users")
     @Secured(Constants.ADMIN)
     public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO, HttpServletRequest request) throws URISyntaxException {
         logger.debug("REST request to save User : {}", userDTO);
-        //Lowercase the user login before comparing with database
+        //Lowercase the user username before comparing with database
         if (userRepository.findOneByUserName(userDTO.getUserName().toLowerCase()).isPresent()) {
             return ResponseEntity.badRequest()
-                .headers(HeaderUtil.createFailureAlert("userManagement", "userexists", "Login already in use"))
+                .headers(HeaderUtil.createFailureAlert("userManagement", "userexists", "Username already in use"))
                 .body(null);
         } else if (userRepository.findOneByEmail(userDTO.getEmail()).isPresent()) {
             return ResponseEntity.badRequest()
@@ -119,7 +119,7 @@ public class UserController {
      *
      * @param userDTO the user to update
      * @return the ResponseEntity with status 200 (OK) and with body the updated user,
-     * or with status 400 (Bad Request) if the login or email is already in use,
+     * or with status 400 (Bad Request) if the username or email is already in use,
      * or with status 500 (Internal Server Error) if the user couldn't be updated
      */
     @PutMapping("/users")
@@ -132,7 +132,7 @@ public class UserController {
         }
         existingUser = userRepository.findOneByUserName(userDTO.getUserName().toLowerCase());
         if (existingUser.isPresent() && (!existingUser.get().getId().equals(userDTO.getId()))) {
-            return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert("userManagement", "userexists", "Login already in use")).body(null);
+            return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert("userManagement", "userexists", "Username already in use")).body(null);
         }
         userService.updateUser(userDTO.getId(), userDTO.getUserName(), userDTO.getFirstName(),
             userDTO.getLastName(), userDTO.getEmail(), userDTO.isActivated(),

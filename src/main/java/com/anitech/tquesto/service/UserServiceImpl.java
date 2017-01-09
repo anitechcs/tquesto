@@ -172,9 +172,11 @@ public class UserServiceImpl implements UserService {
                 u.setLangKey(langKey);
                 Set<Authority> managedAuthorities = u.getAuthorities();
                 managedAuthorities.clear();
-                authorities.stream().forEach(
-                    authority -> managedAuthorities.add(authorityRepository.findOne(authority))
-                );
+                if(authorities != null) {
+                	authorities.stream().forEach(
+                        authority -> managedAuthorities.add(authorityRepository.findOne(authority))
+                    );
+                }
                 log.debug("Changed Information for User: {}", u);
             });
     }

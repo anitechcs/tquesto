@@ -33,6 +33,13 @@ public class Authority implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+    
+    public Authority() {
+    }
+ 
+    public Authority(String name) {
+    	this.name = name;
+    }
 
     @Override
     public boolean equals(Object o) {
