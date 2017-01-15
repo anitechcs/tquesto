@@ -9,7 +9,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.anitech.tquesto.auth.TokenProvider;
-import com.anitech.tquesto.repository.UserRepository;
 import com.anitech.tquesto.service.MailService;
 import com.anitech.tquesto.service.UserService;
 
@@ -31,9 +30,6 @@ public class AuthControllerTest {
     
     @MockBean
     MailService mailServiceMock;
-    
-    @MockBean
-    UserRepository userRepositoryMock;
     
     @MockBean
     TokenProvider tokenProviderMock;

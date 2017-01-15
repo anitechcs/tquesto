@@ -11,7 +11,6 @@ import org.hibernate.validator.constraints.Email;
 import com.anitech.tquesto.domain.Authority;
 import com.anitech.tquesto.domain.User;
 import com.anitech.tquesto.util.Constants;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * A DTO representing a user, with his authorities.
@@ -29,7 +28,6 @@ public class UserDTO {
     @Size(min = 1, max = 50)
     private String userName;
     
-    @JsonIgnore
     @Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH)
     private String password;
 

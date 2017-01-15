@@ -170,7 +170,7 @@ public class TquestoProperties {
 
     public static class Mail {
 
-        private String from = "kitchens@localhost";
+        private String from = "admin@tquesto.com";
 
         public String getFrom() {
             return from;
@@ -233,9 +233,9 @@ public class TquestoProperties {
 
     public static class Swagger {
 
-        private String title = "kitchens API";
+        private String title = "TQuesto API";
 
-        private String description = "kitchens API documentation";
+        private String description = "TQuesto API documentation";
 
         private String version = "0.0.1";
 

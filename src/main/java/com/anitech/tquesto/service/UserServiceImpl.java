@@ -10,6 +10,8 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -103,7 +105,11 @@ public class UserServiceImpl implements UserService {
         newUser.setFirstName(firstName);
         newUser.setLastName(lastName);
         newUser.setEmail(email);
-        newUser.setLangKey(langKey);
+        if (langKey == null) {
+        	newUser.setLangKey("en"); // default language
+        } else {
+        	newUser.setLangKey(langKey);
+        }
         // new user is not active
         newUser.setActivated(false);
         // new user gets registration key
@@ -201,8 +207,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<User> getUserWithAuthoritiesByUserName(String userName) {
+    public Optional<User> getUserByUserName(String userName) {
         return userRepository.findOneByUserName(userName).map(u -> {
+            u.getAuthorities().size();
+            return u;
+        });
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findOneByEmail(email).map(u -> {
             u.getAuthorities().size();
             return u;
         });
@@ -210,7 +225,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public User getUserWithAuthorities(Long id) {
+    public User getUser(Long id) {
         User user = userRepository.findOne(id);
         user.getAuthorities().size(); // eagerly load the association
         return user;
@@ -218,7 +233,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public User getUserWithAuthorities() {
+    public User getCurrentUser() {
         Optional<User> optionalUser = userRepository.findOneByUserName(SecurityUtils.getCurrentUserLogin());
         User user = null;
         if (optionalUser.isPresent()) {
@@ -245,5 +260,17 @@ public class UserServiceImpl implements UserService {
             userRepository.delete(user);
         }
     }
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<User> getAllUsers() {
+		return userRepository.findAll();
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Page<User> getAllUsers(Pageable pageable) {
+		return userRepository.findAllWithAuthorities(pageable);
+	}
     
 }

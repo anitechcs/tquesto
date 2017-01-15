@@ -15,7 +15,7 @@ public class LoginDTO {
 	@Pattern(regexp = Constants.USER_NAME_REGEX)
     @NotNull
     @Size(min = 1, max = 50)
-    private String username;
+    private String userName;
 
     @NotNull
     @Size(min = UserDTO.PASSWORD_MIN_LENGTH, max = UserDTO.PASSWORD_MAX_LENGTH)
@@ -23,12 +23,12 @@ public class LoginDTO {
 
     private Boolean rememberMe;
 
-    public String getUsername() {
-        return username;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {
@@ -51,7 +51,7 @@ public class LoginDTO {
     public String toString() {
         return "LoginVM{" +
             "password='*****'" +
-            ", username='" + username + '\'' +
+            ", username='" + userName + '\'' +
             ", rememberMe=" + rememberMe +
             '}';
     }
