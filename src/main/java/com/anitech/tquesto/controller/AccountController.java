@@ -1,5 +1,7 @@
 package com.anitech.tquesto.controller;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -9,7 +11,6 @@ import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -49,30 +50,48 @@ public class AccountController {
     /**
      * POST  /register : register the user.
      *
-     * @param userDTO the managed user View Model
-     * @param request the HTTP request
-     * @return the ResponseEntity with status 201 (Created) if the user is registered or 400 (Bad Request) if the login or e-mail is already in use
+     * @param userDTO
+     * @param request
+     * @return the ResponseEntity with status 201 (Created) if the user is registered or 400 (Bad Request) if the username or e-mail is already in use
      */
-    @PostMapping(path = "/register", produces={MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE})
-    public ResponseEntity<String> registerAccount(@Valid @RequestBody UserDTO userDTO, HttpServletRequest request) {
+    @PostMapping(path = "/register")
+    public ResponseEntity<Map<String, Object>> registerAccount(@Valid @RequestBody UserDTO userDTO, HttpServletRequest request) {
     	logger.debug("Inside registerAccount() method!");
-        HttpHeaders textPlainHeaders = new HttpHeaders();
-        textPlainHeaders.setContentType(MediaType.TEXT_PLAIN);
-
-        return userService.getUserByUserName(userDTO.getUserName().toLowerCase())
-            .map(user -> new ResponseEntity<>("login already in use", textPlainHeaders, HttpStatus.BAD_REQUEST))
-            .orElseGet(() -> userService.getUserByEmail(userDTO.getEmail())
-                .map(user -> new ResponseEntity<>("e-mail address already in use", textPlainHeaders, HttpStatus.BAD_REQUEST))
-                .orElseGet(() -> {
-                    User user = userService.createUser(userDTO.getUserName(), userDTO.getPassword(),
-                    userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail().toLowerCase(),
-                    userDTO.getLangKey());
-                    
-                    String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-                    mailService.sendActivationEmail(user, baseUrl);
-                    return new ResponseEntity<>("Created", HttpStatus.CREATED);
-                })
-        );
+    	HashMap<String, Object> responseMap = new HashMap<>();
+    	
+    	try {
+    		Optional<User> user = userService.getUserByUserName(userDTO.getUserName().toLowerCase());
+        	if(user.isPresent()) {
+        		responseMap.put("statusCode", "400");
+        		responseMap.put("errMsg", "Username already in use");
+        		return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.BAD_REQUEST);
+        	}
+        	
+        	user = userService.getUserByEmail(userDTO.getEmail());
+        	if(user.isPresent()) {
+        		responseMap.put("statusCode", "400");
+        		responseMap.put("errMsg", "Email address already in use");
+        		return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.BAD_REQUEST);
+        	}
+        	
+        	User newUser = userService.createUser(userDTO.getUserName().toLowerCase().trim(), userDTO.getPassword(),
+	        userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail().toLowerCase(),
+	        userDTO.getLangKey());
+	        
+	        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+	        mailService.sendActivationEmail(newUser, baseUrl);
+	        
+	        responseMap.put("statusCode", "0");
+			responseMap.put("errMsg", "");
+		} catch (Exception ex) {
+			responseMap.put("statusCode", "1000");
+			responseMap.put("errMessage", ex.getMessage()); 
+			logger.error("Exception occoured at getEventDetails: " + ex);
+			ex.printStackTrace();
+			return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+    	
+        return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.CREATED);
     }
 
     /**
