@@ -1,7 +1,11 @@
 package com.anitech.tquesto.service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.anitech.tquesto.domain.User;
 import com.anitech.tquesto.dto.UserDTO;
@@ -33,12 +37,18 @@ public interface UserService {
 
 	public void changePassword(String password);
 
-	public Optional<User> getUserWithAuthoritiesByUserName(String userName);
+	public Optional<User> getUserByUserName(String userName);
+	
+	public Optional<User> getUserByEmail(String email);
 
-	public User getUserWithAuthorities(Long id);
+	public User getUser(Long id);
 
-	public User getUserWithAuthorities();
+	public User getCurrentUser();
 
 	public void removeNotActivatedUsers();
+
+	public List<User> getAllUsers();
+	
+	public Page<User> getAllUsers(Pageable pageable);
 
 }

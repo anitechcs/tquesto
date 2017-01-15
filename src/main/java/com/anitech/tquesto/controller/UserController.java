@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.anitech.tquesto.domain.User;
 import com.anitech.tquesto.dto.UserDTO;
-import com.anitech.tquesto.repository.UserRepository;
 import com.anitech.tquesto.service.MailService;
 import com.anitech.tquesto.service.UserService;
 import com.anitech.tquesto.util.Constants;
@@ -69,9 +68,6 @@ public class UserController {
 	private final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Inject
-    private UserRepository userRepository;
-
-    @Inject
     private MailService mailService;
 
     @Inject
@@ -96,11 +92,11 @@ public class UserController {
     public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO, HttpServletRequest request) throws URISyntaxException {
         logger.debug("REST request to save User : {}", userDTO);
         //Lowercase the user username before comparing with database
-        if (userRepository.findOneByUserName(userDTO.getUserName().toLowerCase()).isPresent()) {
+        if (userService.getUserByUserName(userDTO.getUserName().toLowerCase()).isPresent()) {
             return ResponseEntity.badRequest()
                 .headers(HeaderUtil.createFailureAlert("userManagement", "userexists", "Username already in use"))
                 .body(null);
-        } else if (userRepository.findOneByEmail(userDTO.getEmail()).isPresent()) {
+        } else if (userService.getUserByEmail(userDTO.getEmail()).isPresent()) {
             return ResponseEntity.badRequest()
                 .headers(HeaderUtil.createFailureAlert("userManagement", "emailexists", "Email already in use"))
                 .body(null);
@@ -126,11 +122,11 @@ public class UserController {
     @Secured(Constants.ADMIN)
     public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO) {
         logger.debug("REST request to update User : {}", userDTO);
-        Optional<User> existingUser = userRepository.findOneByEmail(userDTO.getEmail());
+        Optional<User> existingUser = userService.getUserByEmail(userDTO.getEmail());
         if (existingUser.isPresent() && (!existingUser.get().getId().equals(userDTO.getId()))) {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert("userManagement", "emailexists", "E-mail already in use")).body(null);
         }
-        existingUser = userRepository.findOneByUserName(userDTO.getUserName().toLowerCase());
+        existingUser = userService.getUserByUserName(userDTO.getUserName().toLowerCase());
         if (existingUser.isPresent() && (!existingUser.get().getId().equals(userDTO.getId()))) {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert("userManagement", "userexists", "Username already in use")).body(null);
         }
@@ -140,7 +136,7 @@ public class UserController {
 
         return ResponseEntity.ok()
             .headers(HeaderUtil.createAlert("A user is updated with identifier " + userDTO.getUserName(), userDTO.getUserName()))
-            .body(new UserDTO(userService.getUserWithAuthorities(userDTO.getId())));
+            .body(new UserDTO(userService.getUser(userDTO.getId())));
     }
 
     /**
@@ -153,7 +149,7 @@ public class UserController {
     @GetMapping("/users")
     public ResponseEntity<List<UserDTO>> getAllUsers(Pageable pageable)
         throws URISyntaxException {
-        Page<User> page = userRepository.findAllWithAuthorities(pageable);
+        Page<User> page = userService.getAllUsers(pageable);
         List<UserDTO> userDTOs = page.getContent().stream()
             .map(UserDTO::new)
             .collect(Collectors.toList());
@@ -170,7 +166,7 @@ public class UserController {
     @GetMapping("/users/{userName:" + Constants.USER_NAME_REGEX + "}")
     public ResponseEntity<UserDTO> getUser(@PathVariable String userName) {
         logger.debug("REST request to get User : {}", userName);
-        return userService.getUserWithAuthoritiesByUserName(userName)
+        return userService.getUserByUserName(userName)
                 .map(UserDTO::new)
                 .map(userDTO -> new ResponseEntity<>(userDTO, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -190,20 +186,4 @@ public class UserController {
         return ResponseEntity.ok().headers(HeaderUtil.createAlert( "A user is deleted with identifier " + userName, userName)).build();
     }
 
-    /**
-     * SEARCH  /_search/users/:query : search for the User corresponding
-     * to the query.
-     *
-     * @param query the query to search
-     * @return the result of the search
-     */
-    @GetMapping("/_search/users/{query}")
-    public List<User> search(@PathVariable String query) {
-        return null;
-        
-        /*StreamSupport
-            .stream(userSearchRepository.search(queryStringQuery(query)).spliterator(), false)
-            .collect(Collectors.toList());*/
-    }
-    
 }

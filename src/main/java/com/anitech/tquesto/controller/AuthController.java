@@ -47,7 +47,7 @@ public class AuthController {
     @PostMapping("/authenticate")
     public ResponseEntity<?> authorize(@Valid @RequestBody LoginDTO loginDTO, HttpServletResponse response) {
     	logger.debug("Inside authorize() method!");
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDTO.getUserName(), loginDTO.getPassword());
 
         try {
             Authentication authentication = this.authenticationManager.authenticate(authenticationToken);

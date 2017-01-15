@@ -74,7 +74,7 @@ public class AppController {
         } else {
             App newApp = appService.createApp(appDTO);
             String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-            mailService.sendAppCreationEmail(userService.getUserWithAuthorities(), newApp, baseUrl);
+            mailService.sendAppCreationEmail(userService.getCurrentUser(), newApp, baseUrl);
             return ResponseEntity.created(new URI("/api/apps/" + newApp.getAppName()))
                 .headers(HeaderUtil.createAlert( "A App is created with identifier " + newApp.getAppName(), newApp.getAppName()))
                 .body(newApp);

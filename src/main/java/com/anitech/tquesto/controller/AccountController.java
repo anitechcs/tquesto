@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.anitech.tquesto.domain.User;
 import com.anitech.tquesto.dto.KeyAndPasswordDTO;
 import com.anitech.tquesto.dto.UserDTO;
-import com.anitech.tquesto.repository.UserRepository;
 import com.anitech.tquesto.service.MailService;
 import com.anitech.tquesto.service.UserService;
 
@@ -41,9 +40,6 @@ public class AccountController {
 	private final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     @Inject
-    private UserRepository userRepository;
-
-    @Inject
     private UserService userService;
 
     @Inject
@@ -58,23 +54,23 @@ public class AccountController {
      * @return the ResponseEntity with status 201 (Created) if the user is registered or 400 (Bad Request) if the login or e-mail is already in use
      */
     @PostMapping(path = "/register", produces={MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE})
-    public ResponseEntity<?> registerAccount(@Valid @RequestBody UserDTO userDTO, HttpServletRequest request) {
+    public ResponseEntity<String> registerAccount(@Valid @RequestBody UserDTO userDTO, HttpServletRequest request) {
     	logger.debug("Inside registerAccount() method!");
         HttpHeaders textPlainHeaders = new HttpHeaders();
         textPlainHeaders.setContentType(MediaType.TEXT_PLAIN);
 
-        return userRepository.findOneByUserName(userDTO.getUserName().toLowerCase())
+        return userService.getUserByUserName(userDTO.getUserName().toLowerCase())
             .map(user -> new ResponseEntity<>("login already in use", textPlainHeaders, HttpStatus.BAD_REQUEST))
-            .orElseGet(() -> userRepository.findOneByEmail(userDTO.getEmail())
+            .orElseGet(() -> userService.getUserByEmail(userDTO.getEmail())
                 .map(user -> new ResponseEntity<>("e-mail address already in use", textPlainHeaders, HttpStatus.BAD_REQUEST))
                 .orElseGet(() -> {
                     User user = userService.createUser(userDTO.getUserName(), userDTO.getPassword(),
                     userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail().toLowerCase(),
                     userDTO.getLangKey());
+                    
                     String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-
                     mailService.sendActivationEmail(user, baseUrl);
-                    return new ResponseEntity<>(HttpStatus.CREATED);
+                    return new ResponseEntity<>("Created", HttpStatus.CREATED);
                 })
         );
     }
@@ -99,7 +95,7 @@ public class AccountController {
      */
     @GetMapping("/account")
     public ResponseEntity<UserDTO> getAccount() {
-        return Optional.ofNullable(userService.getUserWithAuthorities())
+        return Optional.ofNullable(userService.getCurrentUser())
             .map(user -> new ResponseEntity<>(new UserDTO(user), HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
     }
