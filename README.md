@@ -23,6 +23,7 @@ Our primary goals are:
 
 * Clone the source code from `git@github.com:anitechcs/tquesto.git`
 * CD into project directory `cd tquesto`
+* Create a Postgres database called `tquestodb` and update the db details in application.properties
 * Run `mvn spring-boot:run` to start the application
 * Open the browser and access the applicatin at `http://localhost:8080`
 * You can access Swagger Services docs at `http://localhost:8080/swagger-ui.html`
