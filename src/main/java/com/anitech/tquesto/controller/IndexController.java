@@ -19,7 +19,7 @@ public class IndexController {
 	/**
 	 * This method is to let spring play nice with Angular Routes
 	 */
-	@RequestMapping({"/home/**"})
+	@RequestMapping({"/home/**", "/login/**", "/register/**", "/resetpassword/**"})
 	public String index() {
 		logger.info("Inside IndexController->index(), Forwarding request to index.html!");
 		return "forward:/index.html";

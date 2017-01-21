@@ -101,10 +101,19 @@ public class AccountController {
      * @return the ResponseEntity with status 200 (OK) and the activated user in body, or status 500 (Internal Server Error) if the user couldn't be activated
      */
     @GetMapping("/activate")
-    public ResponseEntity<String> activateAccount(@RequestParam(value = "key") String key) {
-        return userService.activateRegistration(key)
-            .map(user -> new ResponseEntity<String>(HttpStatus.OK))
-            .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+    public ResponseEntity<Map<String, Object>> activateAccount(@RequestParam(value = "key") String key) {
+    	logger.debug("User activation key: " + key);
+    	HashMap<String, Object> responseMap = new HashMap<>();
+    	Optional<User> user = userService.activateRegistration(key);
+    	if(user.isPresent()) {
+    		responseMap.put("statusCode", "0");
+			responseMap.put("errMsg", "");
+    	} else {
+    		responseMap.put("statusCode", "1000");
+			responseMap.put("errMessage", "User activation failed"); 
+			return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
+        return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.OK);
     }
     
     /**
