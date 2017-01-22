@@ -9,6 +9,17 @@
 
 	<name>tquesto</name>
 	<description>Drop in analytics for your application</description>
+	<url>http://tquesto.com</url>
+	
+	<organization>
+		<name>Anitech Consulting Services Pvt Ltd.</name>
+		<url>http://anitechcs.com</url>
+	</organization>
+	
+	<scm>
+		<developerConnection>Tapas Jena</developerConnection>
+		<url>https://github.com/anitechcs/tquesto</url>
+	</scm>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -26,10 +37,11 @@
 		<swagger.version>2.5.0</swagger.version>
 		
 		<!-- Docker properties -->
+		<docker.maven.plugin.version>0.19.0</docker.maven.plugin.version>
         <docker.image.name>anitechcs/${project.artifactId}:${project.version}</docker.image.name>
-        <docker.from>java:8u40</docker.from>
+        <docker.from>java:8</docker.from>
         <docker.container.port>8080</docker.container.port>
-        <docker.host.port>8080</docker.host.port>
+        <docker.host.port>80</docker.host.port>
 	</properties>
 
 	<dependencies>
@@ -98,11 +110,6 @@
             <artifactId>spring-boot-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-websocket</artifactId>
-			<scope>test</scope>
-		</dependency>
         <dependency>
 		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-java8</artifactId>
@@ -223,32 +230,15 @@
 			<plugin>
 				<groupId>io.fabric8</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.18.1</version>
+				<version>${docker.maven.plugin.version}</version>
+				
 				<configuration>
-					<!-- If you have a different reg set it here <registry>hub.docker.com</registry> -->
 					<verbose>true</verbose>
 					<logDate>default</logDate>
 					<autoPull>true</autoPull>
 					<images>
 						<image>
-							<alias>db</alias>
-							<name>postgres:9.6</name>
-							<run>
-								<wait>
-									<log>database system is ready to accept connections</log>
-									<time>20000</time>
-								</wait>
-								<log>
-									<prefix>DB</prefix>
-									<color>green</color>
-								</log>
-								<ports>
-									<port>5431:5431</port>
-								</ports>
-							</run>
-						</image>
-						<image>
-							<alias>service</alias>
+							<alias>app</alias>
 							<name>${docker.image.name}</name>
 							<build>
 								<from>${docker.from}</from>
@@ -263,43 +253,50 @@
 													<include>${project.groupId}:${project.artifactId}</include>
 												</includes>
 												<outputDirectory>.</outputDirectory>
-												<outputFileNameMapping>app.jar</outputFileNameMapping>
+												<outputFileNameMapping>tquesto.jar</outputFileNameMapping>
 											</dependencySet>
 										</dependencySets>
 									</inline>
 								</assembly>
-								<ports>
-									<port>${docker.container.port}</port>
-								</ports>
-								<entryPoint>
-									<arg>java</arg>
-									<arg>-Djava.security.egd=file:/dev/./urandom</arg>
-									<arg>-jar</arg>
-									<arg>/maven/app.jar</arg>
-								</entryPoint>
+								<cmd> 
+						           <shell>java -jar /maven/tquesto.jar</shell>
+						        </cmd>
 							</build>
 	
 							<run>
 								<ports>
 									<port>${docker.host.port}:${docker.container.port}</port>
 								</ports>
-								<log>
-									<prefix>TC</prefix>
-									<color>cyan</color>
-									<!-- <driver> <name>gelf</name> <opts> <gelf-address>udp://${docker.host.address}:12201</gelf-address> 
-										</opts> </driver> -->
-								</log>
 								<wait>
 									<http>
-										<url>http://${docker.host.address}:${docker.host.port}/api/ping</url>
+										<url>http://${docker.host.address}:${docker.host.port}</url>
 										<method>GET</method>
 									</http>
 									<log>${docker.image.name} is ready.</log>
 									<time>200000</time>
 								</wait>
 								<links>
-									<link>db:db</link>
+									<link>database:db</link>
 								</links>
+							</run>
+						</image>
+						
+						<image>
+							<alias>database</alias>
+							<name>postgres:9.6</name>
+							<run>
+								<env>
+								    <POSTGRES_DB>tquestodb</POSTGRES_DB>
+								    <POSTGRES_USER>postgres</POSTGRES_USER>
+								    <POSTGRES_PASSWORD>postgres</POSTGRES_PASSWORD>
+								</env>
+								<ports>
+									<port>5431:5432</port>
+								</ports>
+								<wait> 
+						            <log>database system is ready to accept connections</log>
+						            <time>20000</time>
+						        </wait>
 							</run>
 						</image>
 					</images>
@@ -307,4 +304,5 @@
 			</plugin>
 		</plugins>
 	</build>
+	
 </project>
