@@ -151,14 +151,23 @@ public class AccountController {
      * @param request the HTTP request
      * @return the ResponseEntity with status 200 (OK) if the e-mail was sent, or status 400 (Bad Request) if the e-mail address is not registered
      */
-    @PostMapping(path = "/account/reset_password/init", produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<?> requestPasswordReset(@RequestBody String mail, HttpServletRequest request) {
-        return userService.requestPasswordReset(mail)
-            .map(user -> {
-                String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-                mailService.sendPasswordResetMail(user, baseUrl);
-                return new ResponseEntity<>("e-mail was sent", HttpStatus.OK);
-            }).orElse(new ResponseEntity<>("e-mail address not registered", HttpStatus.BAD_REQUEST));
+    @PostMapping(path = "/account/reset_password/init")
+    public ResponseEntity<Map<String, Object>> requestPasswordReset(@RequestBody String mail, HttpServletRequest request) {
+    	logger.debug("Password reset email: " + mail);
+    	HashMap<String, Object> responseMap = new HashMap<>();
+    	Optional<User> user = userService.requestPasswordReset(mail);
+    	if(user.isPresent()) {
+    		String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+            mailService.sendPasswordResetMail(user.get(), baseUrl);
+    		responseMap.put("statusCode", "0");
+			responseMap.put("errMsg", "");
+    	} else {
+    		responseMap.put("statusCode", "1000");
+			responseMap.put("errMessage", "E-mail address not registered"); 
+			return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
+    	
+        return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.OK);
     }
 
     /**
@@ -168,14 +177,26 @@ public class AccountController {
      * @return the ResponseEntity with status 200 (OK) if the password has been reset,
      * or status 400 (Bad Request) or 500 (Internal Server Error) if the password could not be reset
      */
-    @PostMapping(path = "/account/reset_password/finish", produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> finishPasswordReset(@RequestBody KeyAndPasswordDTO keyAndPassword) {
-        if (!checkPasswordLength(keyAndPassword.getNewPassword())) {
-            return new ResponseEntity<>("Incorrect password", HttpStatus.BAD_REQUEST);
+    @PostMapping(path = "/account/reset_password/finish")
+    public ResponseEntity<Map<String, Object>> finishPasswordReset(@RequestBody KeyAndPasswordDTO keyAndPassword) {
+    	HashMap<String, Object> responseMap = new HashMap<>();
+    	if (!checkPasswordLength(keyAndPassword.getNewPassword())) {
+    		responseMap.put("statusCode", "1200");
+			responseMap.put("errMessage", "Incorrect password"); 
+    		return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.BAD_REQUEST);
         }
-        return userService.completePasswordReset(keyAndPassword.getNewPassword(), keyAndPassword.getKey())
-              .map(user -> new ResponseEntity<String>(HttpStatus.OK))
-              .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+    	
+    	Optional<User> user = userService.completePasswordReset(keyAndPassword.getNewPassword(), keyAndPassword.getKey());
+    	if(user.isPresent()) {
+    		responseMap.put("statusCode", "0");
+			responseMap.put("errMsg", "");
+    	} else {
+    		responseMap.put("statusCode", "1000");
+			responseMap.put("errMessage", "Password reset has failed"); 
+			return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
+    	
+    	return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.OK);
     }
 
     private boolean checkPasswordLength(String password) {
