@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.anitech.tquesto.domain.User;
 import com.anitech.tquesto.dto.KeyAndPasswordDTO;
+import com.anitech.tquesto.dto.RegistrationDTO;
 import com.anitech.tquesto.dto.UserDTO;
 import com.anitech.tquesto.service.MailService;
 import com.anitech.tquesto.service.UserService;
@@ -50,33 +51,33 @@ public class AccountController {
     /**
      * POST  /register : register the user.
      *
-     * @param userDTO
+     * @param registrationDTO
      * @param request
      * @return the ResponseEntity with status 201 (Created) if the user is registered or 400 (Bad Request) if the username or e-mail is already in use
      */
     @PostMapping(path = "/register")
-    public ResponseEntity<Map<String, Object>> registerAccount(@Valid @RequestBody UserDTO userDTO, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> registerAccount(@Valid @RequestBody RegistrationDTO registrationDTO, HttpServletRequest request) {
     	logger.debug("Inside registerAccount() method!");
     	HashMap<String, Object> responseMap = new HashMap<>();
     	
     	try {
-    		Optional<User> user = userService.getUserByUserName(userDTO.getUserName().toLowerCase());
+    		Optional<User> user = userService.getUserByUserName(registrationDTO.getUserName().toLowerCase());
         	if(user.isPresent()) {
         		responseMap.put("statusCode", "400");
         		responseMap.put("errMsg", "Username already in use");
         		return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.BAD_REQUEST);
         	}
         	
-        	user = userService.getUserByEmail(userDTO.getEmail());
+        	user = userService.getUserByEmail(registrationDTO.getEmail());
         	if(user.isPresent()) {
         		responseMap.put("statusCode", "400");
         		responseMap.put("errMsg", "Email address already in use");
         		return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.BAD_REQUEST);
         	}
         	
-        	User newUser = userService.createUser(userDTO.getUserName().toLowerCase().trim(), userDTO.getPassword(),
-	        userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail().toLowerCase(),
-	        userDTO.getLangKey());
+        	User newUser = userService.createUser(registrationDTO.getUserName().toLowerCase().trim(), registrationDTO.getPassword(),
+	        registrationDTO.getFirstName(), registrationDTO.getLastName(), registrationDTO.getEmail().toLowerCase(),
+	        registrationDTO.getLangKey());
 	        
 	        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
 	        mailService.sendActivationEmail(newUser, baseUrl);
@@ -86,7 +87,7 @@ public class AccountController {
 		} catch (Exception ex) {
 			responseMap.put("statusCode", "1000");
 			responseMap.put("errMessage", ex.getMessage()); 
-			logger.error("Exception occoured at getEventDetails: " + ex);
+			logger.error("Exception occoured at registerAccount: " + ex);
 			ex.printStackTrace();
 			return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -136,12 +137,25 @@ public class AccountController {
      * @return the ResponseEntity with status 200 (OK), or status 400 (Bad Request) if the new password is not strong enough
      */
     @PostMapping(path = "/account/change_password", produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<?> changePassword(@RequestBody String password) {
-        if (!checkPasswordLength(password)) {
-            return new ResponseEntity<>("Incorrect password", HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Map<String, Object>> changePassword(@RequestBody String password) {
+    	HashMap<String, Object> responseMap = new HashMap<>();
+    	if (!checkPasswordLength(password)) {
+    		responseMap.put("statusCode", "1200");
+			responseMap.put("errMessage", "Incorrect password"); 
+    		return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.BAD_REQUEST);
         }
-        userService.changePassword(password);
-        return new ResponseEntity<>(HttpStatus.OK);
+    	try {
+			userService.changePassword(password);
+			responseMap.put("statusCode", "0");
+			responseMap.put("errMsg", "");
+		} catch (Exception e) {
+			responseMap.put("statusCode", "1000");
+			responseMap.put("errMessage", "Password change has failed"); 
+			logger.error("Exception occoured at changePassword: " + e);
+			e.printStackTrace();
+			return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+    	return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.OK);
     }
 
     /**
