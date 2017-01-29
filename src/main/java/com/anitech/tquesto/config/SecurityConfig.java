@@ -75,7 +75,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		.and()
 			.authorizeRequests()
-			.antMatchers(HttpMethod.OPTIONS, "/api/**").permitAll() //Allow CORS preflight request
+			.antMatchers(HttpMethod.OPTIONS, "/**").permitAll() //Allow CORS preflight request
             .antMatchers("/*.{css,js,html}").permitAll()
             .antMatchers("/assets/**").permitAll()
 			.antMatchers("/api/register").permitAll()
