@@ -1,38 +1,30 @@
 package com.anitech.tquesto.dto;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Email;
 
-import com.anitech.tquesto.domain.Authority;
 import com.anitech.tquesto.domain.User;
 import com.anitech.tquesto.util.Constants;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * A DTO representing a user, with his authorities.
+ * A DTO representing a user, for registration
  * 
  * @author Tapas
  */
-public class UserDTO {
+public class RegistrationDTO {
 	
 	public static final int PASSWORD_MIN_LENGTH = 3;
 	public static final int PASSWORD_MAX_LENGTH = 20;
 	
-	private Long id;
-
     @Pattern(regexp = Constants.USER_NAME_REGEX)
     @Size(min = 1, max = 50)
     private String userName;
     
     @Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH)
-    @JsonIgnore
     private String password;
-
+    
     @Size(max = 50)
     private String firstName;
 
@@ -47,25 +39,20 @@ public class UserDTO {
     private String phone;
 
     private boolean activated = false;
-
+    
     @Size(min = 2, max = 5)
     private String langKey;
 
-    private Set<String> authorities;
-
-    public UserDTO() {
+    public RegistrationDTO() {
     }
 
-    public UserDTO(User user) {
-        this(user.getId(), user.getUserName(), user.getPassword(), user.getFirstName(), user.getLastName(),
-            user.getEmail(), user.getPhone(), user.getActivated(), user.getLangKey(),
-            user.getAuthorities().stream().map(Authority::getName)
-                .collect(Collectors.toSet()));
+    public RegistrationDTO(User user) {
+        this(user.getUserName(), user.getPassword(), user.getFirstName(), user.getLastName(),
+            user.getEmail(),user.getPhone(), user.getActivated(), user.getLangKey());
     }
 
-    public UserDTO(Long id, String userName, String password, String firstName, String lastName,
-        String email, String phone, boolean activated, String langKey, Set<String> authorities) {
-    	this.id = id;
+    public RegistrationDTO(String userName, String password, String firstName, String lastName,
+        String email, String phone, boolean activated, String langKey) {
         this.userName = userName;
         this.password = password;
         this.firstName = firstName;
@@ -74,13 +61,7 @@ public class UserDTO {
         this.phone = phone;
         this.activated = activated;
         this.langKey = langKey;
-        this.authorities = authorities;
     }
-
-
-    public Long getId() {
-		return id;
-	}
 
 	public String getUserName() {
 		return userName;
@@ -109,13 +90,9 @@ public class UserDTO {
 	public boolean isActivated() {
         return activated;
     }
-
-    public String getLangKey() {
+	
+	public String getLangKey() {
         return langKey;
-    }
-
-    public Set<String> getAuthorities() {
-        return authorities;
     }
 
     @Override
@@ -128,7 +105,6 @@ public class UserDTO {
             ", phone='" + phone + '\'' +
             ", activated=" + activated +
             ", langKey='" + langKey + '\'' +
-            ", authorities=" + authorities +
             "}";
     }
 }

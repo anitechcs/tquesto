@@ -2,7 +2,9 @@ package com.anitech.tquesto.controller;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -118,9 +120,9 @@ public class UserController {
      * or with status 400 (Bad Request) if the username or email is already in use,
      * or with status 500 (Internal Server Error) if the user couldn't be updated
      */
-    @PutMapping("/users")
+    @PutMapping("/users/{userId}")
     @Secured(Constants.ADMIN)
-    public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> updateUser(@PathVariable String userId, @RequestBody UserDTO userDTO) {
         logger.debug("REST request to update User : {}", userDTO);
         Optional<User> existingUser = userService.getUserByEmail(userDTO.getEmail());
         if (existingUser.isPresent() && (!existingUser.get().getId().equals(userDTO.getId()))) {
@@ -180,10 +182,21 @@ public class UserController {
      */
     @DeleteMapping("/users/{userName:" + Constants.USER_NAME_REGEX + "}")
     @Secured(Constants.ADMIN)
-    public ResponseEntity<Void> deleteUser(@PathVariable String userName) {
+    public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable String userName) {
         logger.debug("REST request to delete User: {}", userName);
-        userService.deleteUser(userName);
-        return ResponseEntity.ok().headers(HeaderUtil.createAlert( "A user is deleted with identifier " + userName, userName)).build();
+        HashMap<String, Object> responseMap = new HashMap<>();
+        try {
+			userService.deleteUser(userName);
+			responseMap.put("statusCode", "0");
+			responseMap.put("errMsg", "");
+		} catch (Exception e) {
+			responseMap.put("statusCode", "1000");
+			responseMap.put("errMessage", e.getMessage()); 
+			logger.error("Exception occoured at deleteUser: " + e);
+			e.printStackTrace();
+			return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+        return new ResponseEntity<Map<String, Object>>(responseMap, HttpStatus.OK);
     }
 
 }
