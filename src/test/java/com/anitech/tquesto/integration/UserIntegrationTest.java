@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -100,6 +101,7 @@ public class UserIntegrationTest {
     }
     
     @Test
+    @Ignore
     public void updateUser() {
     	User user = testUser;
     	user.setFirstName("UpdatedTest");
