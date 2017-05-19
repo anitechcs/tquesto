@@ -71,7 +71,7 @@ public class AppServiceImpl implements AppService {
 
 	@Override
 	public App getAppById(Long appId) {
-		return appRepository.findOne(appId);
+		return appRepository.getOne(appId);
 	}
 	
 	@Override
