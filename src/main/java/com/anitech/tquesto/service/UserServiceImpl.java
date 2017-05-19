@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
         String langKey) {
 
         User newUser = new User();
-        Authority authority = authorityRepository.findOne(Constants.USER);
+        Authority authority = authorityRepository.getOne(Constants.USER);
         Set<Authority> authorities = new HashSet<>();
         String encryptedPassword = passwordEncoder.encode(password);
         newUser.setUserName(userName);
@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService {
         if (userArg.getAuthorities() != null) {
             Set<Authority> authorities = new HashSet<>();
             userArg.getAuthorities().stream().forEach(
-                authority -> authorities.add(authorityRepository.findOne(authority))
+                authority -> authorities.add(authorityRepository.getOne(authority))
             );
             user.setAuthorities(authorities);
         }
@@ -168,7 +168,7 @@ public class UserServiceImpl implements UserService {
         boolean activated, String langKey, Set<String> authorities) {
 
         Optional.of(userRepository
-            .findOne(id))
+            .getOne(id))
             .ifPresent(u -> {
                 u.setUserName(userName);
                 u.setFirstName(firstName);
@@ -180,7 +180,7 @@ public class UserServiceImpl implements UserService {
                 managedAuthorities.clear();
                 if(authorities != null) {
                 	authorities.stream().forEach(
-                        authority -> managedAuthorities.add(authorityRepository.findOne(authority))
+                        authority -> managedAuthorities.add(authorityRepository.getOne(authority))
                     );
                 }
                 log.debug("Changed Information for User: {}", u);
@@ -226,7 +226,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public User getUser(Long id) {
-        User user = userRepository.findOne(id);
+        User user = userRepository.getOne(id);
         user.getAuthorities().size(); // eagerly load the association
         return user;
     }
