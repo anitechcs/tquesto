@@ -1,12 +1,14 @@
 # tQuesto [![Build Status](https://travis-ci.org/anitechcs/tquesto.svg?branch=master)](https://travis-ci.org/anitechcs/tquesto)
 
-> Drop in analytics for your web/mobile application
+> Drop in analytics for your Web/Mobile/IOT application
 
 ![](https://github.com/anitechcs/tquesto-dashboard/blob/master/src/assets/imgs/logo-blue.png)
 
-tQuesto makes it easy to integrate a powerfull analytics system to your application with absolute minimum fuss. It is completely free to use/customize and always it will be.
+tQuesto makes it easy to integrate a powerfull analytics, monitoring and tracing system to your application with absolute minimum fuss. It is completely free to use/customize and always it will be.
 
 Our primary goals are:
+
+* 5 core functionalities like Analytics, Events, Performance, Engagement and Compaigns in single application
 
 * Provide radically faster and widely accessible API's for your application
 
