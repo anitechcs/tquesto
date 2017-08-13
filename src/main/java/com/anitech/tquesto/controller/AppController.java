@@ -3,6 +3,7 @@ package com.anitech.tquesto.controller;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -88,9 +89,9 @@ public class AppController {
      * @return the ResponseEntity with status 200 (OK) and with body the updated app,
      * or with status 500 (Internal Server Error) if the app couldn't be updated
      */
-	@PutMapping("/apps")
+	@PutMapping("/apps/{appId}")
     @Secured(Constants.ADMIN)
-    public ResponseEntity<AppDTO> updateApp(@RequestBody AppDTO appDTO) {
+    public ResponseEntity<AppDTO> updateApp(@PathVariable Long appId, @RequestBody AppDTO appDTO) {
 		logger.debug("REST request to update App : {}", appDTO);
         appService.updateApp(appDTO);
 
@@ -105,9 +106,9 @@ public class AppController {
      * @return the ResponseEntity with status 200 (OK) and with body all apps
      */
 	@GetMapping("/apps")
-    public ResponseEntity<List<App>> getAllApps() {
+    public Optional<List<App>> getAllApps() {
 		List<App> apps = appService.getAllApps();
-        return new ResponseEntity<>(apps, HttpStatus.OK);
+        return Optional.of(apps);
 	}
 	
 	/**
